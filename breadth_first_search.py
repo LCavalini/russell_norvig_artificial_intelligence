@@ -30,32 +30,31 @@ class Problem:
 
 def evaluate(nodes):
   return sorted(nodes, key = lambda item : item.pathCost)
-     
-def bestFirstSearch(problem, f):
+    
+def breadthFirstSearch(problem):
   node = Node(state=problem.initial)
-  frontier = list()
-  reached = dict()
 
-  reached[node.state] = node
-  frontierStates = problem.frontier(node.state) 
-  frontier = f(expand(problem, node))
+  if problem.isGoal(node.state):
+    return node
+
+  frontier = [node]
+  reached = set()
 
   while len(frontier) > 0:
-    node = frontier.pop()
+    node = frontier.pop(0)
     
-    if problem.isGoal(node.state):
-      return node
- 
     for child in expand(problem, node):
       s = child.state
-      
-      if s not in reached or child.pathCost < reached[s].pathCost:
-        reached[s] = child
+  
+      if problem.isGoal(s):
+        return child
+
+      if s not in reached:
+        reached.add(s)
         frontier.append(child)
-        frontier = f(frontier)
 
   return None
-
+    
 def expand(problem, node):
   s1 = node.state
    
@@ -97,7 +96,7 @@ stateSpace = {"Oradea": {"Zerind": ["Zerind", 71], "Sibiu": ["Sibiu", 151]},
 
 problem = Problem("Arad", "Bucharest", stateSpace)
 
-result = bestFirstSearch(problem, evaluate)
+result = breadthFirstSearch(problem)
 path = list()
 
 if result == None:
